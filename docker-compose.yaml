@@ -1,0 +1,48 @@
+version: '3'
+
+volumes:
+  pg_data:
+  static:
+
+networks:
+  main:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.255.0/24
+      driver: default
+
+services:
+  nats-1:
+    command:
+      - "--debug"
+      - "--cluster"
+      - "nats://0.0.0.0:6222"
+      - "--http_port"
+      - "8222"
+      - "--port"
+      - "4222"
+    image: "nats:2.1.4"
+    networks:
+      - main
+    ports:
+      - "14222:4222"
+      - "18222:8222"
+  db:
+    image: postgres:13
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - main
+  httpserver:
+    build: ./app/
+    networks:
+      - main
+  gateway:
+    build: ./nginx/
+    ports:
+      - 8080:80
+    volumes:
+      - static:/static
+    networks:
+      - main

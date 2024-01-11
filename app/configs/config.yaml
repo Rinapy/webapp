@@ -1,0 +1,12 @@
+port: "8080"
+host: "httpserver"
+
+db_host: "db"
+db_port: "5432"
+db_name: "webapp"
+db_user: "webapp_user"
+db_password: "webapp_password"
+
+clusterID : "test_cluster"
+clientID : "test_publisher"
+natsURL : "http://nats:8081"
