@@ -1,48 +1,33 @@
-version: '3'
-
-volumes:
-  pg_data:
-  static:
+version: '3.5'
 
 networks:
-  main:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.255.0/24
-      driver: default
+  net:
+
 
 services:
-  nats-1:
-    command:
-      - "--debug"
-      - "--cluster"
-      - "nats://0.0.0.0:6222"
-      - "--http_port"
-      - "8222"
-      - "--port"
-      - "4222"
-    image: "nats:2.1.4"
-    networks:
-      - main
+  pg:
+    image: postgres
+    container_name: wb-pg
     ports:
-      - "14222:4222"
-      - "18222:8222"
-  db:
-    image: postgres:13
-    volumes:
-      - pg_data:/var/lib/postgresql/data
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres -h localhost -p 5432"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
-      - main
-  httpserver:
-    build: ./app/
-    networks:
-      - main
-  gateway:
-    build: ./nginx/
+      - net
+
+  nats:
+    image: nats-streaming
+    container_name: wb-nats
     ports:
-      - 8080:80
-    volumes:
-      - static:/static
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
     networks:
-      - main
+      - net
