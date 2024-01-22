@@ -50,7 +50,7 @@ func readJsnDataFromFile(fpath string) []byte {
 }
 
 var jsn1good = `
-	{"order_uid": "b563feb7b2b84b6test",
+	{"order_uid": "sdasd3es231ad23123dastest",
 	"track_number": "WBILMTESTTRACK",
 	"entry": "WBIL",
 	"delivery": {
@@ -100,7 +100,6 @@ var jsn1good = `
 	}
 	`
 
-// "order_uid": "f563fef7f2f84f6test",
 var jsn2bad = `
 	{
 	"track_number": "WBILMTESTTRACK",
@@ -152,7 +151,7 @@ var jsn2bad = `
   }`
 
 var jsn3good = `
-	{"order_uid": "f563fef7f2f84f6test",
+	{"order_uid": "aasdasds3123fef1231sd7f2f84f6test",
 	"track_number": "WBILMTESTTRACK",
 	"entry": "WBIL",
 	"delivery": {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/go-playground/pure/v5"
 	"net/http"
 	"text/template"
@@ -23,19 +24,33 @@ func (h *handler) getOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pure.JSONBytes(w, http.StatusOK, o)
+	var orderData interface{}
+	err := json.Unmarshal(o, &orderData)
+	if err != nil {
+		http.Error(w, "error decoding JSON", http.StatusInternalServerError)
+		return
+	}
+
+	jsonData, err := json.MarshalIndent(orderData, "", "  ")
+	if err != nil {
+		http.Error(w, "error encoding JSON", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func (h *handler) getIndex(w http.ResponseWriter, r *http.Request) {
 	indexPage := `
-	<h3>Список поступивших заказов{{ if not . }} пуст.{{ else }}:{{ end }}</h3>
+	<h2>Список поступивших заказов{{ if not . }} пуст. {{ else }}:{{ end }}</h2>
 	<ul>
 		{{range .}}
 			<li><a href="/order/{{.}}">{{.}}</a></li>
 		{{end}}
 	</ul>`
 
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	templ := template.Must(template.New("index").Parse(indexPage))
 	templ.Execute(w, h.s.GetAll())

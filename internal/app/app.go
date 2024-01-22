@@ -33,7 +33,9 @@ func (app *App) ProcNatsMessages(data []byte) {
 		return
 	}
 	order.Data = data
-	if err := app.pg.InsertOrder(order); err != nil {
+	if err := app.pg.InsertOrder(order); err == nil {
 		app.ch.Add(order.ID, order.Data)
+	} else if err != nil {
+		log.Println("(App): error - add data in storages")
 	}
 }
